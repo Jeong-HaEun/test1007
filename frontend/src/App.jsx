@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { fetchReports } from './api/reports.js'
+import MediaFilter, { MEDIA_ALL } from './components/MediaFilter.jsx'
+import ReportTable from './components/ReportTable.jsx'
 import './App.css'
 
 function App() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [media, setMedia] = useState(MEDIA_ALL)
 
   useEffect(() => {
     fetchReports()
@@ -14,6 +17,10 @@ function App() {
       .finally(() => setLoading(false))
   }, [])
 
+  // 필터는 화면에서 처리한다. (5단계 합계 카드도 이 목록 기준)
+  const visibleReports =
+    media === MEDIA_ALL ? reports : reports.filter((report) => report.media === media)
+
   return (
     <main>
       <h1>광고 성과 보고서</h1>
@@ -21,9 +28,8 @@ function App() {
       {error && <p>⚠️ {error} — 백엔드가 켜져 있는지 확인하세요.</p>}
       {!loading && !error && (
         <>
-          <p>데이터 {reports.length}개</p>
-          {/* 3단계: 연결 확인용으로 원본 그대로 보여준다. 4단계에서 표로 바꾼다. */}
-          <pre>{JSON.stringify(reports, null, 2)}</pre>
+          <MediaFilter value={media} onChange={setMedia} />
+          <ReportTable reports={visibleReports} />
         </>
       )}
     </main>
