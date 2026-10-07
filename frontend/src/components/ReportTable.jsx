@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import MetricName from './MetricName.jsx'
 import { calcMetrics, formatMetrics, formatNumber } from '../utils/metrics.js'
 
 const TEXT_COLUMNS = ['날짜', '매체', '캠페인', '광고그룹', '소재']
@@ -34,7 +35,7 @@ function ReportTable({ reports, onEdit, onDelete }) {
           <tr>
             {TEXT_COLUMNS.map((name) => <th key={name}>{name}</th>)}
             {NUMBER_COLUMNS.map((name) => <th key={name} className="num">{name}</th>)}
-            {METRIC_COLUMNS.map((name) => <th key={name} className="num metric">{name}</th>)}
+            {METRIC_COLUMNS.map((name) => <th key={name} className="num metric"><MetricName name={name} /></th>)}
             <th className="actions">관리</th>
           </tr>
         </thead>

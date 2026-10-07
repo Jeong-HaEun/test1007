@@ -30,8 +30,11 @@ function App() {
     <main className="app">
       <header className="app-header">
         <div>
-          <h1>Adporter</h1>
-          <p>광고 성과 보고서 · 매체별 CTR · CPC · CPB · CPA · ROAS</p>
+          <h1 className="brand">
+            <img src="/favicon.png" alt="" width="40" height="40" />
+            Adporter
+          </h1>
+          <p>광고 성과 보고서 · 매체별 CTR · CPC · CPB(Cost Per Basket) · CPA · ROAS</p>
         </div>
         <CsvUpload onUploaded={loadReports} />
       </header>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import MetricName from './MetricName.jsx'
 import { calcMetrics, campaignBreakdown, formatMetrics, formatNumber } from '../utils/metrics.js'
 
 const NUMBER_FIELDS = ['cost', 'impressions', 'clicks', 'carts', 'conversions', 'revenue']
@@ -58,7 +59,7 @@ function CampaignTable({ reports }) {
             <th className="num">매출</th>
             <th className="num metric">CTR</th>
             <th className="num metric">CPC</th>
-            <th className="num metric">CPB</th>
+            <th className="num metric"><MetricName name="CPB" /></th>
             <th className="num metric">CPA</th>
             <th className="num metric">ROAS</th>
           </tr>

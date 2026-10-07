@@ -18,6 +18,24 @@
   gap: 16px;
 }
 
+/* 제목 옆 개구리 아이콘 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand img {
+  flex-shrink: 0;
+}
+
+/* CPB 같은 약어: 점선 밑줄 + 마우스를 올리면 전체 이름 */
+abbr[title] {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
 .app-header p {
   margin: 4px 0 0;
   color: var(--text-muted);
@@ -259,6 +277,13 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--text-muted);
+}
+
+.summary-hint {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-placeholder);
 }
 
 .summary-value {

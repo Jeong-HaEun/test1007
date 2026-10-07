@@ -1,3 +1,4 @@
+import MetricName from './MetricName.jsx'
 import TrendChart from './TrendChart.jsx'
 import {
   calcMetrics, changeRate, formatChange, formatMetrics, formatNumber, formatPercent, formatWon,
@@ -110,7 +111,7 @@ export function MonthlyTable({ reports }) {
             <tr>
               <th>월</th>
               {NUMBER_COLUMNS.map(({ field, label }) => <th key={field} className="num">{label}</th>)}
-              {METRIC_COLUMNS.map(({ field, label }) => <th key={field} className="num metric">{label}</th>)}
+              {METRIC_COLUMNS.map(({ field, label }) => <th key={field} className="num metric"><MetricName name={label} /></th>)}
               <th className="num metric">CPA</th>
               <th className="num">전월 대비</th>
               <th className="num metric">ROAS</th>
