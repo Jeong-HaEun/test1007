@@ -286,6 +286,122 @@ abbr[title] {
   color: var(--text-placeholder);
 }
 
+/* 합계 카드: 최근 7일 + 전주 대비 */
+.summary-week {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-change {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* 퍼널: 노출 → 클릭 → 장바구니 → 구매 */
+.funnel-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0;
+  padding: 8px;
+}
+
+.funnel-step {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 16px 20px;
+  border-right: 1px solid rgba(26, 18, 16, 0.08);
+}
+
+.funnel-step:last-child {
+  border-right: none;
+}
+
+.funnel-rate {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.funnel-rate strong {
+  color: var(--accent-tomato);
+  font-size: 14px;
+}
+
+.funnel-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.funnel-count {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.funnel-count.accent {
+  color: var(--accent-tomato);
+}
+
+.funnel-summary {
+  background: var(--accent-tomato-soft);
+  border-radius: 14px;
+}
+
+.table-caption {
+  caption-side: top;
+  padding: 14px 14px 4px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.badge-low {
+  margin-left: 6px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-tomato-hover);
+  background: var(--accent-tomato-soft);
+  border-radius: var(--radius-pill);
+}
+
+/* 소재 인사이트 */
+.insight-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(560px, 100%), 1fr));
+  gap: 16px;
+}
+
+.insight-alert {
+  padding: 16px 20px;
+  border-color: var(--accent-tomato-glow);
+}
+
+.insight-alert ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.report-table .rank {
+  width: 48px;
+  color: var(--text-muted);
+}
+
+.creative-path {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 .summary-value {
   font-size: 28px;
   font-weight: 700;

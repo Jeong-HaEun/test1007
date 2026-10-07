@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DailyTable, DailyTrendCharts } from '../components/DailyTrend.jsx'
+import FunnelSection from '../components/FunnelSection.jsx'
 import MediaFilter from '../components/MediaFilter.jsx'
 import { MonthlyTable, MonthlyTrendCharts } from '../components/MonthlySummary.jsx'
 import SummaryCards from '../components/SummaryCards.jsx'
@@ -14,6 +15,7 @@ function OverviewPage({ reports }) {
     <>
       <MediaFilter value={media} onChange={setMedia} />
       <SummaryCards reports={visible} />
+      <FunnelSection reports={visible} allReports={reports} />
       <DailyTrendCharts reports={visible} />
       <MonthlyTrendCharts reports={visible} />
       <MonthlyTable reports={visible} />

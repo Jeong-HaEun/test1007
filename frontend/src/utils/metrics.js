@@ -20,6 +20,11 @@ export function calcMetrics(row) {
     cpb: divide(row.cost, row.carts),
     cpa: divide(row.cost, row.conversions),
     roas: divide(row.revenue, row.cost),
+    // 퍼널 지표: 어느 단계에서 고객이 빠지는지
+    cartRate: divide(row.carts, row.clicks), // 장바구니 담기율
+    purchaseRate: divide(row.conversions, row.carts), // 장바구니 → 구매율
+    cvr: divide(row.conversions, row.clicks), // 구매 전환율
+    aov: divide(row.revenue, row.conversions), // 객단가
   }
 }
 
@@ -175,4 +180,44 @@ export function formatMetrics(metrics) {
     cpa: formatWon(metrics.cpa),
     roas: formatPercent(metrics.roas, 0),
   }
+}
+
+/** 퍼널 지표 표시용 문자열 */
+export function formatFunnel(metrics) {
+  return {
+    ctr: formatPercent(metrics.ctr, 2),
+    cartRate: formatPercent(metrics.cartRate, 1),
+    purchaseRate: formatPercent(metrics.purchaseRate, 1),
+    cvr: formatPercent(metrics.cvr, 2),
+    aov: formatWon(metrics.aov),
+  }
+}
+
+/**
+ * 기간 비교: 데이터의 최근 days 일 vs 그 전 days 일.
+ * 반환: { current, previous, currentFrom, currentTo } (totals 는 sumReports 결과) 또는 데이터가 없으면 null
+ */
+export function periodComparison(rows, days = 7) {
+  const latest = latestDate(rows)
+  if (!latest) return null
+  const currentFrom = shiftDate(latest, -(days - 1))
+  const previousTo = shiftDate(currentFrom, -1)
+  const previousFrom = shiftDate(previousTo, -(days - 1))
+  return {
+    currentFrom,
+    currentTo: latest,
+    current: sumReports(filterByDateRange(rows, currentFrom, latest)),
+    previous: sumReports(filterByDateRange(rows, previousFrom, previousTo)),
+  }
+}
+
+/** 소재별 성과: [{ key, media, campaignName, adGroupName, creativeName, totals }] */
+export function creativeBreakdown(rows) {
+  const keyOf = (row) => [row.media, row.campaignName, row.adGroupName, row.creativeName].join('|')
+  const first = new Map()
+  for (const row of rows) if (!first.has(keyOf(row))) first.set(keyOf(row), row)
+  return [...groupTotals(rows, keyOf)].map(([key, totals]) => {
+    const { media, campaignName, adGroupName, creativeName } = first.get(key)
+    return { key, media, campaignName, adGroupName, creativeName, totals }
+  })
 }

@@ -1,8 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  calcMetrics, campaignBreakdown, changeRate, dailyTrend, filterByDateRange, formatChange, formatMetrics, formatNumber, latestDate,
-  monthlyTrend, shiftDate, shiftMonth, sumReports,
+  calcMetrics, campaignBreakdown, changeRate, creativeBreakdown, dailyTrend, filterByDateRange,
+  formatChange, formatFunnel, formatMetrics, formatNumber, latestDate, monthlyTrend, periodComparison,
+  shiftDate, shiftMonth, sumReports,
 } from './metrics.js'
 
 const sample = {
@@ -146,4 +147,37 @@ test('캠페인별 성과는 매체+캠페인으로 묶고, 광고그룹을 하�
   ])
   assert.deepEqual(result.map((c) => `${c.media} ${c.campaignName} ${c.totals.cost}`), ['META 브랜드 1000', 'NAVER 브랜드 450'])
   assert.deepEqual(result[1].adGroups.map((g) => `${g.adGroupName} ${g.totals.cost}`), ['B 300', 'A 150'])
+})
+
+test('퍼널 지표: 담기율 · 장바구니→구매율 · 전환율 · 객단가, 분모 0이면 -', () => {
+  const funnel = formatFunnel(calcMetrics(sample)) // 클릭 1200, 장바구니 80, 전환 30, 매출 450000
+  assert.deepEqual(funnel, {
+    ctr: '2.40%',
+    cartRate: '6.7%', // 80 / 1200
+    purchaseRate: '37.5%', // 30 / 80
+    cvr: '2.50%', // 30 / 1200
+    aov: '15,000원', // 450000 / 30
+  })
+  assert.equal(formatFunnel(calcMetrics({ ...sample, carts: 0 })).purchaseRate, '-')
+})
+
+test('기간 비교: 최근 7일 vs 그 전 7일 (데이터 최근 날짜 기준)', () => {
+  const rows = [
+    day('2026-10-14', 100, 1, 100), // 이번 주 (10/08~10/14)
+    day('2026-10-08', 50, 1, 50), // 이번 주 첫날
+    day('2026-10-07', 30, 1, 30), // 지난주 마지막 날 (10/01~10/07)
+    day('2026-09-30', 999, 1, 999), // 범위 밖
+  ]
+  const result = periodComparison(rows)
+  assert.equal(result.currentFrom, '2026-10-08')
+  assert.equal(result.current.cost, 150)
+  assert.equal(result.previous.cost, 30)
+  assert.equal(periodComparison([]), null)
+})
+
+test('소재별 성과는 매체+캠페인+광고그룹+소재로 묶는다', () => {
+  const row = (creativeName, cost) =>
+    ({ ...day('2026-10-01', cost, 1, cost), media: 'META', campaignName: 'C', adGroupName: 'G', creativeName })
+  const result = creativeBreakdown([row('영상', 100), row('영상', 50), row('이미지', 30)])
+  assert.deepEqual(result.map((c) => `${c.creativeName} ${c.totals.cost}`), ['영상 150', '이미지 30'])
 })

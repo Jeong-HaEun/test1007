@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createReport, deleteReport, updateReport } from '../api/reports.js'
 import CampaignTable from '../components/CampaignTable.jsx'
+import CreativeInsights from '../components/CreativeInsights.jsx'
 import DateFilter from '../components/DateFilter.jsx'
 import MediaFilter from '../components/MediaFilter.jsx'
 import ReportForm from '../components/ReportForm.jsx'
@@ -53,6 +54,8 @@ function CampaignPage({ reports, onChanged }) {
         </h2>
         <CampaignTable reports={visible} />
       </section>
+
+      <CreativeInsights reports={visible} />
 
       <section className="section raw-section">
         <h2>
