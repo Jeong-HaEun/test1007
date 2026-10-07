@@ -11,8 +11,12 @@
 | 영역 | 기술 | 배포 |
 |---|---|---|
 | 프론트엔드 | React (Vite) | Vercel |
-| 백엔드 | Spring Boot (Java 17, Gradle) | Render Web Service |
-| DB | MySQL 8 (Docker 이미지) | Render 무료 Web Service — **재시작 시 데이터 초기화돼도 괜찮음** |
+| 백엔드 | Spring Boot 4 (Java 21, Gradle) | Render Web Service |
+| DB | MySQL 8 | **Aiven 무료 MySQL** (Render 무료 플랜은 MySQL을 제공하지 않음) |
+
+- **Docker는 쓰지 않는다.** 로컬 개발 때도 백엔드가 Aiven DB에 접속한다.
+- Aiven은 SSL 접속이 필수 → JDBC URL 끝에 `?sslMode=REQUIRED` 를 붙인다.
+  - 예: `jdbc:mysql://<호스트>:<포트>/defaultdb?sslMode=REQUIRED`
 
 ## 폴더 구조
 ```
@@ -86,3 +90,4 @@ test1007/
 ## 로컬 실행 (작성 예정)
 - 프론트: `cd frontend && npm install && npm run dev` → http://localhost:5173
 - 백엔드: `cd backend && ./gradlew bootRun` → http://localhost:8080
+  - 실행 전 `SPRING_DATASOURCE_*` 환경변수에 Aiven 접속 정보를 넣어야 한다.
