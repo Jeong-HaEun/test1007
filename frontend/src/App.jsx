@@ -22,10 +22,13 @@ function App() {
     media === MEDIA_ALL ? reports : reports.filter((report) => report.media === media)
 
   return (
-    <main>
-      <h1>광고 성과 보고서</h1>
-      {loading && <p>불러오는 중…</p>}
-      {error && <p>⚠️ {error} — 백엔드가 켜져 있는지 확인하세요.</p>}
+    <main className="app">
+      <header className="app-header">
+        <h1>광고 성과 보고서</h1>
+        <p>매체별 광고 성과와 CTR · CPC · CPB · CPA · ROAS</p>
+      </header>
+      {loading && <p className="glass status">불러오는 중…</p>}
+      {error && <p className="glass status">⚠️ {error} — 백엔드가 켜져 있는지 확인하세요.</p>}
       {!loading && !error && (
         <>
           <MediaFilter value={media} onChange={setMedia} />

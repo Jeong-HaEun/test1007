@@ -18,7 +18,7 @@ function MediaFilter({ value, onChange }) {
           aria-pressed={value === option.value}
           onClick={() => onChange(option.value)}
         >
-          {value === option.value ? `✓ ${option.label}` : option.label}
+          {option.label}
         </button>
       ))}
     </div>
