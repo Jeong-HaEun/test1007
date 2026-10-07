@@ -7,7 +7,7 @@
 
 ## 화면
 
-![Adporter 요약 페이지: 합계 카드와 일자별 CPA·ROAS 추이](docs/overview.png)
+![Adporter 요약 페이지: 합계 카드(최근 7일·전주 대비)와 퍼널 분석](docs/overview.png)
 
 ## 주요 기능
 
