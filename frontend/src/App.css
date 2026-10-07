@@ -10,9 +10,132 @@
   gap: 24px;
 }
 
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
 .app-header p {
   margin: 4px 0 0;
   color: var(--text-muted);
+}
+
+/* 버튼 */
+.button-primary,
+.button-secondary {
+  padding: 10px 20px;
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.button-primary {
+  color: #fff;
+  background: var(--accent-tomato);
+  border: 1px solid var(--accent-tomato);
+  box-shadow: 0 6px 20px var(--accent-tomato-glow);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: var(--accent-tomato-hover);
+}
+
+.button-primary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.button-secondary {
+  color: var(--text-main);
+  background: var(--glass-surface);
+  border: var(--glass-border);
+  box-shadow: var(--glass-inner-glow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.button-secondary:hover {
+  background: var(--glass-surface-hover);
+}
+
+.button-primary:focus-visible,
+.button-secondary:focus-visible {
+  outline: 2px solid var(--accent-tomato);
+  outline-offset: 2px;
+}
+
+/* CSV 업로드 */
+.csv-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.csv-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.csv-message {
+  max-width: 560px;
+  padding: 14px 18px;
+  font-size: 14px;
+}
+
+.csv-message p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.csv-message.success p {
+  color: var(--text-main);
+}
+
+.csv-message.error p {
+  color: var(--accent-tomato-hover);
+}
+
+.csv-message ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+}
+
+/* 합계 카드 */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 24px;
+}
+
+.summary-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.summary-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-value.accent {
+  color: var(--accent-tomato);
 }
 
 .status {

@@ -23,6 +23,11 @@ export function createReport(report) {
   return request('', { method: 'POST', body: JSON.stringify(report) })
 }
 
+/** CSV 일괄 등록. 같은 날짜·매체·캠페인·광고그룹·소재는 덮어쓴다. 반환: { created, updated } */
+export function bulkUpsertReports(reports) {
+  return request('/bulk', { method: 'POST', body: JSON.stringify(reports) })
+}
+
 export function updateReport(id, report) {
   return request(`/${id}`, { method: 'PUT', body: JSON.stringify(report) })
 }
