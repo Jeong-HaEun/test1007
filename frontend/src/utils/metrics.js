@@ -45,8 +45,8 @@ function groupTotals(rows, keyOf) {
   return new Map([...groups].map(([key, groupRows]) => [key, sumReports(groupRows)]))
 }
 
-/** '2026-10-07' 에서 days 만큼 뺀 날짜 (시간대 영향 없게 UTC 로 계산) */
-function shiftDate(isoDate, days) {
+/** '2026-10-07' 에서 days 만큼 옮긴 날짜 (시간대 영향 없게 UTC 로 계산) */
+export function shiftDate(isoDate, days) {
   const date = new Date(`${isoDate}T00:00:00Z`)
   date.setUTCDate(date.getUTCDate() + days)
   return date.toISOString().slice(0, 10)
@@ -64,6 +64,16 @@ export function dailyTrend(rows, days = 14) {
     const date = shiftDate(latest, index - (days - 1))
     return { date, totals: byDate.get(date) ?? null }
   })
+}
+
+/** 데이터에서 가장 최근 날짜. 없으면 null */
+export function latestDate(rows) {
+  return rows.reduce((latest, row) => (latest && latest > row.reportDate ? latest : row.reportDate), null)
+}
+
+/** from ~ to (둘 다 포함) 사이의 행. 빈 값('')은 제한 없음 */
+export function filterByDateRange(rows, from, to) {
+  return rows.filter((row) => (!from || row.reportDate >= from) && (!to || row.reportDate <= to))
 }
 
 /** 월 누적: [{ month: '2026-10', totals }] 최신 월부터 */

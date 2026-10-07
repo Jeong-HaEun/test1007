@@ -1,7 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  calcMetrics, dailyTrend, formatMetrics, formatNumber, monthlyTotals, sumReports,
+  calcMetrics, dailyTrend, filterByDateRange, formatMetrics, formatNumber, latestDate, monthlyTotals,
+  shiftDate, sumReports,
 } from './metrics.js'
 
 const sample = {
@@ -96,4 +97,18 @@ test('월 누적은 월별로 더하고 최신 월이 먼저 온다', () => {
 test('데이터가 없으면 추이와 월 누적 모두 빈 목록이다', () => {
   assert.deepEqual(dailyTrend([]), [])
   assert.deepEqual(monthlyTotals([]), [])
+})
+
+test('날짜 필터는 시작·끝 날짜를 포함하고, 빈 값은 제한하지 않는다', () => {
+  const rows = ['2026-10-01', '2026-10-05', '2026-10-07'].map((date) => day(date, 1, 1, 1))
+  const dates = (list) => list.map((row) => row.reportDate)
+  assert.deepEqual(dates(filterByDateRange(rows, '2026-10-05', '2026-10-07')), ['2026-10-05', '2026-10-07'])
+  assert.deepEqual(dates(filterByDateRange(rows, '', '2026-10-01')), ['2026-10-01'])
+  assert.equal(filterByDateRange(rows, '', '').length, 3)
+})
+
+test('최근 날짜와 날짜 이동', () => {
+  assert.equal(latestDate([day('2026-10-01', 1, 1, 1), day('2026-10-07', 1, 1, 1)]), '2026-10-07')
+  assert.equal(latestDate([]), null)
+  assert.equal(shiftDate('2026-10-07', -6), '2026-10-01')
 })

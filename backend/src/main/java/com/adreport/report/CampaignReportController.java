@@ -39,6 +39,9 @@ public class CampaignReportController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CampaignReport create(@Valid @RequestBody CampaignReport report) {
+        if (findSameKey(report).isPresent()) {
+            throw duplicate();
+        }
         report.setId(null); // id 는 DB가 정한다
         return repository.save(report);
     }
@@ -53,10 +56,7 @@ public class CampaignReportController {
         int created = 0;
         int updated = 0;
         for (CampaignReport report : reports) {
-            Optional<CampaignReport> existing = repository
-                    .findFirstByReportDateAndMediaAndCampaignNameAndAdGroupNameAndCreativeName(
-                            report.getReportDate(), report.getMedia(), report.getCampaignName(),
-                            report.getAdGroupName(), report.getCreativeName());
+            Optional<CampaignReport> existing = findSameKey(report);
             if (existing.isPresent()) {
                 report.setId(existing.get().getId());
                 updated++;
@@ -78,6 +78,11 @@ public class CampaignReportController {
         if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "report not found: " + id);
         }
+        // 다른 행과 기준(날짜·매체·캠페인·광고그룹·소재)이 겹치게 바꾸는 것은 막는다
+        Optional<CampaignReport> sameKey = findSameKey(report);
+        if (sameKey.isPresent() && !sameKey.get().getId().equals(id)) {
+            throw duplicate();
+        }
         report.setId(id);
         return repository.save(report);
     }
@@ -90,5 +95,16 @@ public class CampaignReportController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "report not found: " + id);
         }
         repository.deleteById(id);
+    }
+
+    /** 중복 기준: 날짜 + 매체 + 캠페인 + 광고그룹 + 소재 */
+    private Optional<CampaignReport> findSameKey(CampaignReport report) {
+        return repository.findFirstByReportDateAndMediaAndCampaignNameAndAdGroupNameAndCreativeName(
+                report.getReportDate(), report.getMedia(), report.getCampaignName(),
+                report.getAdGroupName(), report.getCreativeName());
+    }
+
+    private static ResponseStatusException duplicate() {
+        return new ResponseStatusException(HttpStatus.CONFLICT, "duplicate report");
     }
 }

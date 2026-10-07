@@ -107,6 +107,90 @@
   color: var(--text-muted);
 }
 
+/* 직접 추가·수정 입력 칸 */
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.report-form h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px 16px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.report-form input:focus-visible,
+.report-form select:focus-visible {
+  outline: 2px solid var(--accent-tomato);
+  outline-offset: 1px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.form-error {
+  margin: 0;
+  font-weight: 600;
+  color: var(--accent-tomato-hover);
+}
+
+/* 표 안의 수정·삭제 버튼 */
+.report-table .actions {
+  text-align: right;
+}
+
+.row-button {
+  margin-left: 4px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid rgba(26, 18, 16, 0.12);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.row-button:hover:not(:disabled) {
+  color: var(--text-main);
+  background: var(--glass-surface-hover);
+}
+
+.row-button.danger {
+  color: #fff;
+  background: var(--accent-tomato);
+  border-color: var(--accent-tomato);
+}
+
+.row-button.danger:hover:not(:disabled) {
+  background: var(--accent-tomato-hover);
+}
+
+.row-button:focus-visible {
+  outline: 2px solid var(--accent-tomato);
+  outline-offset: 2px;
+}
+
 /* 하단 섹션 (일자별 추이, 월 누적) */
 .section {
   display: flex;
@@ -186,14 +270,56 @@
   color: var(--text-muted);
 }
 
+/* 필터 줄: 매체 · 기간 · 직접 추가 */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+.toolbar-add {
+  margin-left: auto;
+}
+
+.date-filter {
+  align-items: center;
+}
+
+.date-filter button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+}
+
+.date-range input,
+.report-form input,
+.report-form select {
+  padding: 7px 12px;
+  font: inherit;
+  color: var(--text-main);
+  background: var(--glass-surface);
+  border: var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-inner-glow);
+}
+
 /* 매체 필터 */
-.media-filter {
+.media-filter,
+.date-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.media-filter button {
+.media-filter button,
+.date-filter button {
   padding: 8px 18px;
   font: inherit;
   font-weight: 600;
@@ -208,19 +334,23 @@
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
-.media-filter button:hover {
+.media-filter button:hover,
+.date-filter button:hover:not(:disabled) {
   background: var(--glass-surface-hover);
   color: var(--text-main);
 }
 
-.media-filter button[aria-pressed='true'] {
+.media-filter button[aria-pressed='true'],
+.date-filter button[aria-pressed='true'] {
   color: var(--accent-tomato);
   background: var(--accent-tomato-soft);
   border-color: var(--accent-tomato-glow);
   box-shadow: var(--glass-inner-glow), 0 4px 16px var(--accent-tomato-glow);
 }
 
-.media-filter button:focus-visible {
+.media-filter button:focus-visible,
+.date-filter button:focus-visible,
+.date-range input:focus-visible {
   outline: 2px solid var(--accent-tomato);
   outline-offset: 2px;
 }

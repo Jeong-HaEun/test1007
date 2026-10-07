@@ -3,13 +3,19 @@
 
 const BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/reports`
 
+const ERROR_MESSAGES = {
+  400: '입력값을 확인해 주세요 (빈칸, 음수, 100자 초과 등)',
+  404: '이미 삭제된 데이터예요. 새로고침해 주세요',
+  409: '같은 날짜·매체·캠페인·광고그룹·소재의 데이터가 이미 있어요. 기존 줄을 수정해 주세요',
+}
+
 async function request(path, options = {}) {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   })
   if (!response.ok) {
-    throw new Error(`API 요청 실패 (HTTP ${response.status})`)
+    throw new Error(ERROR_MESSAGES[response.status] ?? `API 요청 실패 (HTTP ${response.status})`)
   }
   // 삭제(204)는 응답 본문이 없다
   return response.status === 204 ? null : response.json()
