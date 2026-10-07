@@ -17,8 +17,9 @@ function App() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [media, setMedia] = useState(MEDIA_ALL)
-  const [dateRange, setDateRange] = useState({ from: '', to: '' })
+  const [media, setMedia] = useState(MEDIA_ALL) // 상단 요약용
+  const [rawMedia, setRawMedia] = useState(MEDIA_ALL) // 로우 데이터용 (상단과 따로)
+  const [dateRange, setDateRange] = useState({ from: '', to: '' }) // 로우 데이터용
   const [editing, setEditing] = useState(null) // null | NEW_REPORT | 수정할 행
   const [actionError, setActionError] = useState(null)
 
@@ -55,10 +56,12 @@ function App() {
   }
 
   // 필터는 화면에서 처리한다.
-  // 매체: 전체 화면에 적용 / 기간: 상단(합계 카드·성과 표)에만 적용
-  const mediaReports =
-    media === MEDIA_ALL ? reports : reports.filter((report) => report.media === media)
-  const topReports = filterByDateRange(mediaReports, dateRange.from, dateRange.to)
+  // 상단(합계 카드·일자별 추이·월 누적): 상단 매체 필터만
+  // 로우 데이터: 로우 데이터용 매체 필터 + 기간 필터 (상단과 따로 동작)
+  const byMedia = (value) =>
+    value === MEDIA_ALL ? reports : reports.filter((report) => report.media === value)
+  const summaryReports = byMedia(media)
+  const rawReports = filterByDateRange(byMedia(rawMedia), dateRange.from, dateRange.to)
 
   return (
     <main className="app">
@@ -73,30 +76,38 @@ function App() {
       {error && <p className="glass status">⚠️ {error} — 백엔드가 켜져 있는지 확인하세요.</p>}
       {!loading && !error && (
         <>
-          <div className="toolbar">
-            <MediaFilter value={media} onChange={setMedia} />
-            <DateFilter value={dateRange} onChange={setDateRange} latest={latestDate(reports)} />
-            <button
-              type="button"
-              className="button-primary toolbar-add"
-              onClick={() => setEditing(NEW_REPORT)}
-            >
-              + 직접 추가
-            </button>
-          </div>
-          <SummaryCards reports={topReports} />
-          {editing && (
-            <ReportForm
-              key={editing === NEW_REPORT ? NEW_REPORT : editing.id}
-              report={editing === NEW_REPORT ? null : editing}
-              onSubmit={handleSave}
-              onCancel={() => setEditing(null)}
-            />
-          )}
-          {actionError && <p className="glass status form-error">⚠️ {actionError}</p>}
-          <ReportTable reports={topReports} onEdit={setEditing} onDelete={handleDelete} />
-          <DailyTrend reports={mediaReports} />
-          <MonthlySummary reports={mediaReports} />
+          <MediaFilter value={media} onChange={setMedia} label="요약 매체 필터" />
+          <SummaryCards reports={summaryReports} />
+          <DailyTrend reports={summaryReports} />
+          <MonthlySummary reports={summaryReports} />
+
+          <section className="section raw-section">
+            <h2>
+              로우 데이터
+              <span className="section-sub">{rawReports.length}줄 · 수정·삭제 가능</span>
+            </h2>
+            <div className="toolbar">
+              <MediaFilter value={rawMedia} onChange={setRawMedia} label="로우 데이터 매체 필터" />
+              <DateFilter value={dateRange} onChange={setDateRange} latest={latestDate(reports)} />
+              <button
+                type="button"
+                className="button-primary toolbar-add"
+                onClick={() => setEditing(NEW_REPORT)}
+              >
+                + 직접 추가
+              </button>
+            </div>
+            {editing && (
+              <ReportForm
+                key={editing === NEW_REPORT ? NEW_REPORT : editing.id}
+                report={editing === NEW_REPORT ? null : editing}
+                onSubmit={handleSave}
+                onCancel={() => setEditing(null)}
+              />
+            )}
+            {actionError && <p className="glass status form-error">⚠️ {actionError}</p>}
+            <ReportTable reports={rawReports} onEdit={setEditing} onDelete={handleDelete} />
+          </section>
         </>
       )}
     </main>
