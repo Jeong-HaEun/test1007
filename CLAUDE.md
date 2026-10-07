@@ -129,7 +129,7 @@ node --test src/utils/metrics.test.js # 파일 하나만
 매체별 ROAS 막대 차트, 소재별 CPB 비교
 
 ## 배포 단계 체크리스트
-- README.md: UTF-8. 배포 주소 기재 완료, **화면 캡처**는 아직.
+- README.md: UTF-8. 배포 주소 + 요약 페이지 캡처(`docs/overview.png`) 완료.
 - 배포 주소: 프론트 https://test1007-frontend-rri4.vercel.app / 백엔드 https://ad-report-api.onrender.com (Render `CORS_ALLOWED_ORIGINS` 에 프론트 주소 + localhost)
 - 배포 구성(모두 무료): 프론트 Vercel(Root `frontend`) / 백엔드 Render(Docker, Root `backend`, `backend/Dockerfile`) / DB Aiven MySQL. Render 는 15분 무요청 시 잠듦.
 - Render 빌드는 테스트를 건너뛴다(`bootJar -x test`). 포트는 `PORT` 환경변수, DB 연결 풀 5개.

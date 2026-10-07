@@ -7,7 +7,7 @@
 
 ## 화면
 
-_(배포 후 캡처 추가)_
+![Adporter 요약 페이지: 합계 카드와 일자별 CPA·ROAS 추이](docs/overview.png)
 
 ## 주요 기능
 
