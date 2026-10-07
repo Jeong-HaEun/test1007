@@ -2,8 +2,15 @@
 
 네이버 · 메타 · 구글 광고 성과 데이터를 매일 CSV로 쌓고, **CTR · CPC · CPB · CPA · ROAS** 를 자동 계산해 보여 주는 그로스 마케팅 대시보드입니다.
 
-- **배포 주소**: https://test1007-frontend-rri4.vercel.app
-- 백엔드는 무료 서버라 15분간 요청이 없으면 잠듭니다. 첫 접속 시 30초 ~ 1분 정도 걸릴 수 있어요.
+## 바로가기
+
+| 구분 | 링크 |
+|---|---|
+| 🐸 **사이트 (요약)** | https://test1007-frontend-rri4.vercel.app |
+| 캠페인 · 광고그룹 페이지 | https://test1007-frontend-rri4.vercel.app/campaigns |
+| 백엔드 API | https://ad-report-api.onrender.com/api/reports |
+
+> 백엔드는 무료 서버라 15분간 요청이 없으면 잠듭니다. 첫 접속 시 30초 ~ 1분 정도 걸릴 수 있어요.
 
 ## 화면
 
