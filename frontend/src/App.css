@@ -107,6 +107,49 @@
   color: var(--text-muted);
 }
 
+/* 하단 섹션 (일자별 추이, 월 누적) */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.section h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.section-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.trend-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: 16px;
+}
+
+.trend-chart {
+  margin: 0;
+  padding: 20px 16px 12px;
+}
+
+.trend-chart figcaption {
+  margin: 0 0 8px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 /* 합계 카드 */
 .summary-cards {
   display: grid;

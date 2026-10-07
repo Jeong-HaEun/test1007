@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { fetchReports } from './api/reports.js'
 import CsvUpload from './components/CsvUpload.jsx'
+import DailyTrend from './components/DailyTrend.jsx'
 import MediaFilter, { MEDIA_ALL } from './components/MediaFilter.jsx'
+import MonthlySummary from './components/MonthlySummary.jsx'
 import ReportTable from './components/ReportTable.jsx'
 import SummaryCards from './components/SummaryCards.jsx'
 import './App.css'
@@ -46,6 +48,8 @@ function App() {
           <MediaFilter value={media} onChange={setMedia} />
           <SummaryCards reports={visibleReports} />
           <ReportTable reports={visibleReports} />
+          <DailyTrend reports={visibleReports} />
+          <MonthlySummary reports={visibleReports} />
         </>
       )}
     </main>
