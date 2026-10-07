@@ -71,17 +71,82 @@ export function latestDate(rows) {
   return rows.reduce((latest, row) => (latest && latest > row.reportDate ? latest : row.reportDate), null)
 }
 
+/** 매체 필터의 '전체' 값 */
+export const MEDIA_ALL = 'ALL'
+
+/** 선택한 매체의 행만. MEDIA_ALL 이면 전체 */
+export function filterByMedia(rows, media) {
+  return media === MEDIA_ALL ? rows : rows.filter((row) => row.media === media)
+}
+
 /** from ~ to (둘 다 포함) 사이의 행. 빈 값('')은 제한 없음 */
 export function filterByDateRange(rows, from, to) {
   return rows.filter((row) => (!from || row.reportDate >= from) && (!to || row.reportDate <= to))
 }
 
-/** 월 누적: [{ month: '2026-10', totals }] 최신 월부터 */
-export function monthlyTotals(rows) {
+/**
+ * 캠페인 → 광고그룹 성과. 캠페인은 매체+캠페인명으로 구분한다 (매체가 다르면 다른 캠페인).
+ * 반환: [{ key, media, campaignName, totals, adGroups: [{ key, adGroupName, totals }] }] 광고비 큰 순
+ */
+export function campaignBreakdown(rows) {
+  const byCost = (a, b) => b.totals.cost - a.totals.cost
+  const campaigns = new Map()
+  for (const row of rows) {
+    const key = `${row.media}|${row.campaignName}`
+    if (!campaigns.has(key)) {
+      campaigns.set(key, { key, media: row.media, campaignName: row.campaignName, rows: [] })
+    }
+    campaigns.get(key).rows.push(row)
+  }
+  return [...campaigns.values()]
+    .map(({ rows: campaignRows, ...campaign }) => ({
+      ...campaign,
+      totals: sumReports(campaignRows),
+      adGroups: [...groupTotals(campaignRows, (row) => row.adGroupName)]
+        .map(([adGroupName, totals]) => ({ key: `${campaign.key}|${adGroupName}`, adGroupName, totals }))
+        .sort(byCost),
+    }))
+    .sort(byCost)
+}
+
+/** '2026-10' 에서 months 만큼 옮긴 월 */
+export function shiftMonth(yearMonth, months) {
+  const [year, month] = yearMonth.split('-').map(Number)
+  const index = year * 12 + (month - 1) + months
+  return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, '0')}`
+}
+
+/**
+ * 월 누적 추이: 데이터의 가장 최근 월 + 그 전 (months-1)개월.
+ * 반환: [{ month, totals, previous }] 오래된 월부터.
+ * 데이터가 없는 달은 totals 가 null. previous 는 전월 totals (전월 대비 계산용, 범위 밖 전월도 포함).
+ */
+export function monthlyTrend(rows, months = 3) {
+  if (rows.length === 0) return []
   const byMonth = groupTotals(rows, (row) => row.reportDate.slice(0, 7))
-  return [...byMonth]
-    .sort(([a], [b]) => b.localeCompare(a))
-    .map(([month, totals]) => ({ month, totals }))
+  const latest = [...byMonth.keys()].sort().at(-1)
+  return Array.from({ length: months }, (_, index) => {
+    const month = shiftMonth(latest, index - (months - 1))
+    return {
+      month,
+      totals: byMonth.get(month) ?? null,
+      previous: byMonth.get(shiftMonth(month, -1)) ?? null,
+    }
+  })
+}
+
+/** 전월 대비 증감률 (CPA 등 금액): 10000 -> 8800 = -0.12. 계산 불가면 null */
+export function changeRate(current, previous) {
+  if (current === null || previous === null || previous === 0) return null
+  return (current - previous) / previous
+}
+
+/** 부호를 화살표로: 0.12 -> '▲ 12%', -0.08 -> '▼ 8%'. unit: '%' 또는 '%p' */
+export function formatChange(value, unit = '%') {
+  if (value === null) return '-'
+  const percent = Math.round(value * 100)
+  if (percent === 0) return `0${unit}`
+  return `${percent > 0 ? '▲' : '▼'} ${Math.abs(percent)}${unit}`
 }
 
 /** 0.0235 -> '2.35%' (digits: 소수점 자리수) */

@@ -1,18 +1,7 @@
-import {
-  CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts'
+import TrendChart from './TrendChart.jsx'
 import {
   calcMetrics, dailyTrend, formatMetrics, formatNumber, formatPercent, formatWon,
 } from '../utils/metrics.js'
-
-// SVG 속성에는 CSS 변수를 쓸 수 없어 index.css 의 값을 그대로 옮겨 둔다
-const COLORS = {
-  line: '#E54331', // --accent-tomato
-  surface: '#FAF5F2', // --bg-base (점 테두리)
-  text: '#1A1210', // --text-main
-  muted: '#5F524E', // --text-muted
-  grid: 'rgba(26, 18, 16, 0.08)',
-}
 
 const DAYS = 14
 
@@ -22,97 +11,41 @@ function shortDate(isoDate) {
   return `${Number(month)}/${Number(day)}`
 }
 
-/** 지표 하나의 선 그래프. 값이 null 인 날은 선을 끊는다 */
-function TrendChart({ title, data, dataKey, format, tickFormat }) {
-  const lastIndex = data.findLastIndex((point) => point[dataKey] !== null)
+function buildPoints(reports) {
+  return dailyTrend(reports, DAYS).map(({ date, totals }) => {
+    const metrics = totals ? calcMetrics(totals) : { cpa: null, roas: null }
+    return { date, label: shortDate(date), tooltipLabel: date, cpa: metrics.cpa, roas: metrics.roas, totals }
+  })
+}
 
+function Period({ points }) {
   return (
-    <figure className="glass trend-chart">
-      <figcaption>{title}</figcaption>
-      <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={data} margin={{ top: 16, right: 56, bottom: 0, left: 0 }}>
-          <CartesianGrid vertical={false} stroke={COLORS.grid} />
-          <XAxis
-            dataKey="label"
-            tickLine={false}
-            axisLine={{ stroke: COLORS.grid }}
-            tick={{ fill: COLORS.muted, fontSize: 12 }}
-            interval="preserveStartEnd"
-          />
-          <YAxis
-            tickFormatter={tickFormat}
-            tickLine={false}
-            axisLine={false}
-            tick={{ fill: COLORS.muted, fontSize: 12 }}
-            width={72}
-          />
-          <Tooltip
-            formatter={(value) => [format(value), title]}
-            labelFormatter={(_, payload) => payload?.[0]?.payload.date}
-            cursor={{ stroke: COLORS.line, strokeOpacity: 0.3 }}
-            contentStyle={{
-              background: 'rgba(255, 255, 255, 0.85)',
-              border: '1px solid rgba(255, 255, 255, 0.9)',
-              borderRadius: 12,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-              color: COLORS.text,
-            }}
-          />
-          <Line
-            type="linear"
-            dataKey={dataKey}
-            stroke={COLORS.line}
-            strokeWidth={2}
-            dot={{ r: 4, fill: COLORS.line, stroke: COLORS.surface, strokeWidth: 2 }}
-            activeDot={{ r: 6, fill: COLORS.line, stroke: COLORS.surface, strokeWidth: 2 }}
-            connectNulls={false}
-            isAnimationActive={false}
-          >
-            {/* 마지막 값만 선 끝에 표시 */}
-            <LabelList
-              dataKey={dataKey}
-              content={({ x, y, index, value }) =>
-                index === lastIndex ? (
-                  <text x={x + 10} y={y} dy={4} fill={COLORS.text} fontSize={12} fontWeight={600}>
-                    {format(value)}
-                  </text>
-                ) : null
-              }
-            />
-          </Line>
-        </LineChart>
-      </ResponsiveContainer>
-    </figure>
+    <span className="section-sub">
+      최근 {DAYS}일 · {points[0].date} ~ {points.at(-1).date}
+    </span>
   )
 }
 
-/** 일자별 성과 추이: 최근 14일 CPA·ROAS 그래프 + 일자별 표 */
-function DailyTrend({ reports }) {
-  const trend = dailyTrend(reports, DAYS)
+function Empty({ title }) {
+  return (
+    <section className="section">
+      <h2>{title}</h2>
+      <p className="glass status">표시할 데이터가 없습니다.</p>
+    </section>
+  )
+}
 
-  if (trend.length === 0) {
-    return (
-      <section className="section">
-        <h2>일자별 성과 추이</h2>
-        <p className="glass status">표시할 데이터가 없습니다.</p>
-      </section>
-    )
-  }
-
-  const points = trend.map(({ date, totals }) => {
-    const metrics = totals ? calcMetrics(totals) : { cpa: null, roas: null }
-    return { date, label: shortDate(date), cpa: metrics.cpa, roas: metrics.roas, totals }
-  })
+/** 일자별 성과 추이: 최근 14일 CPA·ROAS 그래프 */
+export function DailyTrendCharts({ reports }) {
+  const points = buildPoints(reports)
+  if (points.length === 0) return <Empty title="일자별 성과 추이" />
 
   return (
     <section className="section">
       <h2>
         일자별 성과 추이
-        <span className="section-sub">
-          최근 {DAYS}일 · {trend[0].date} ~ {trend.at(-1).date}
-        </span>
+        <Period points={points} />
       </h2>
-
       <div className="trend-charts">
         <TrendChart
           title="CPA 추이"
@@ -129,7 +62,21 @@ function DailyTrend({ reports }) {
           tickFormat={(value) => formatPercent(value, 0)}
         />
       </div>
+    </section>
+  )
+}
 
+/** 일자별 성과 데이터: 최근 14일 표 (최신 날짜부터) */
+export function DailyTable({ reports }) {
+  const points = buildPoints(reports)
+  if (points.length === 0) return <Empty title="일자별 성과 데이터" />
+
+  return (
+    <section className="section">
+      <h2>
+        일자별 성과 데이터
+        <Period points={points} />
+      </h2>
       <div className="glass table-wrap">
         <table className="report-table">
           <thead>
@@ -162,5 +109,3 @@ function DailyTrend({ reports }) {
     </section>
   )
 }
-
-export default DailyTrend

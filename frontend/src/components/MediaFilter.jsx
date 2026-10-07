@@ -1,4 +1,4 @@
-export const MEDIA_ALL = 'ALL'
+import { MEDIA_ALL } from '../utils/metrics.js'
 
 const OPTIONS = [
   { value: MEDIA_ALL, label: '전체' },

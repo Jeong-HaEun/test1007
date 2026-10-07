@@ -285,8 +285,95 @@
   gap: 12px 24px;
 }
 
-.toolbar-add {
+/* 섹션 제목 오른쪽 끝 버튼 (예: + 직접 추가) */
+.section-action {
   margin-left: auto;
+  font-size: 14px;
+}
+
+/* 페이지 메뉴: 요약 / 캠페인·광고그룹 */
+.page-nav {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  width: fit-content;
+  background: var(--glass-surface);
+  border: var(--glass-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--glass-inner-glow);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.page-nav a {
+  padding: 8px 20px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s, color 0.2s;
+}
+
+.page-nav a:hover {
+  color: var(--text-main);
+}
+
+.page-nav a.active {
+  color: #fff;
+  background: var(--accent-tomato);
+  box-shadow: 0 4px 16px var(--accent-tomato-glow);
+}
+
+.page-nav a:focus-visible {
+  outline: 2px solid var(--accent-tomato);
+  outline-offset: 2px;
+}
+
+/* 캠페인 표: 캠페인 행을 누르면 광고그룹 펼침 */
+.campaign-table th .row-button {
+  margin-left: 12px;
+}
+
+.campaign-row td {
+  font-weight: 600;
+}
+
+.expand-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text-main);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.expand-button:hover {
+  color: var(--accent-tomato);
+}
+
+.expand-button:focus-visible {
+  outline: 2px solid var(--accent-tomato);
+  outline-offset: 2px;
+}
+
+.expand-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.ad-group-row td {
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.report-table .ad-group-name {
+  padding-left: 36px;
+  color: var(--text-muted);
 }
 
 .date-filter {
@@ -417,4 +504,10 @@
 
 .report-table th.metric {
   color: var(--accent-tomato);
+}
+
+/* 전월 대비: 좋고 나쁨은 지표마다 달라(CPA 는 ▼가 좋음) 색 대신 화살표로만 표시 */
+.report-table .change {
+  font-size: 13px;
+  color: var(--text-muted);
 }

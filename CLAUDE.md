@@ -70,9 +70,10 @@ node --test src/utils/metrics.test.js # 파일 하나만
 - 계산은 `frontend/src/utils/metrics.js` 한 곳에 모은다.
 - 합계 지표는 **합계끼리 나눈다** (전체 ROAS = 총 매출 ÷ 총 광고비. 행별 평균 아님). 일별·월별도 같은 규칙.
 - 일자별 추이: 데이터의 **최근 날짜 + 이전 13일 (14일)**. 데이터 없는 날은 0이 아니라 빈칸(선 끊김).
-- 월 누적: 월별 합계, 최신 월 먼저.
-- 화면 순서: 요약(합계 카드 → 일자별 추이 → 월 누적) 위, **로우 데이터 표는 맨 아래**.
-- 필터 범위: **상단 매체 필터 = 요약 영역만**. 로우 데이터는 **자체 매체 필터 + 기간 필터** (상단과 따로 동작). "최근 N일"은 오늘이 아니라 데이터의 최근 날짜 기준.
+- 월 누적: 데이터 **최근 월 + 이전 2개월 (3개월)**, 표는 최신 월 먼저. 전월 대비는 CPA = 증감률(%), ROAS = 차이(%p). 범위 밖 전월도 비교에 사용.
+- 추이 그래프는 `TrendChart.jsx` 하나를 일자별·월별이 같이 쓴다.
+- 페이지 2개 (React Router): **`/` 요약** = 합계 카드 → 일자별 추이 그래프 → 월 누적 추이 그래프 → 월 누적 표 → 일자별 표. **`/campaigns` 캠페인·광고그룹** = 캠페인 표(누르면 광고그룹 펼침, 광고비 큰 순) → 로우 데이터(직접 추가·수정·삭제).
+- 필터는 페이지마다 따로: 요약 = 매체 필터, 캠페인 = 매체 + 기간 필터(캠페인 표·로우 데이터 모두). 캠페인은 **매체+캠페인명**으로 구분. "최근 N일"은 데이터의 최근 날짜 기준.
 
 ## API: `/api/reports`
 | 메서드 | 경로 | 성공 | 실패 |
@@ -104,11 +105,11 @@ node --test src/utils/metrics.test.js # 파일 하나만
 - 설정값은 `application.properties` 에 `${ENV_VAR}` 로 연결, 앱 전용 값은 `app.*` 접두사.
 
 ### 프론트엔드 (`frontend/src`)
-- 구조: `App.jsx`(데이터·필터 상태 보유) → `components/*.jsx`(props 로 받아 그리기만) / `utils/`(순수 함수 + `*.test.js`) / `api/reports.js`.
+- 구조: `App.jsx`(데이터 불러오기·메뉴·라우팅) → `pages/*.jsx`(필터 상태) → `components/*.jsx`(props 로 받아 그리기만) / `utils/`(순수 함수 + `*.test.js`) / `api/reports.js`.
 - 컴포넌트: 함수형, `.jsx`, 파일명 PascalCase, `export default`. 계산은 컴포넌트에 쓰지 않고 `utils/metrics.js` 호출.
-- 상태 관리: React `useState` 만. 목록은 `App` 이 한 번 받고, 필터는 화면에서 처리 (서버 재요청 없음).
+- 상태 관리: React `useState` 만. 목록은 `App` 이 한 번 받아 두 페이지에 넘기고, 필터는 화면에서 처리 (서버 재요청 없음).
 - API 호출: `api/reports.js` 에만. `request()` 가 실패 시 `Error` 를 던지고, 화면은 `.catch` 로 메시지 표시.
-- 라이브러리: PapaParse(CSV), Recharts(선 그래프). 그래프는 지표 1개당 1개 (이중 축 금지).
+- 라이브러리: PapaParse(CSV), Recharts(선 그래프), React Router(페이지). 배포 시 `frontend/vercel.json` 이 모든 주소를 index.html 로 보낸다. 그래프는 지표 1개당 1개 (이중 축 금지).
 - 코드 스타일: 들여쓰기 2칸, 작은따옴표, 세미콜론 없음.
 
 ### 디자인 (`style.md`)

@@ -1,8 +1,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  calcMetrics, dailyTrend, filterByDateRange, formatMetrics, formatNumber, latestDate, monthlyTotals,
-  shiftDate, sumReports,
+  calcMetrics, campaignBreakdown, changeRate, dailyTrend, filterByDateRange, formatChange, formatMetrics, formatNumber, latestDate,
+  monthlyTrend, shiftDate, shiftMonth, sumReports,
 } from './metrics.js'
 
 const sample = {
@@ -86,17 +86,39 @@ test('월 경계를 넘어도 날짜가 이어진다', () => {
   assert.equal(trend[0].date, '2026-02-20')
 })
 
-test('월 누적은 월별로 더하고 최신 월이 먼저 온다', () => {
-  const rows = [day('2026-09-30', 100, 1, 100), day('2026-10-01', 200, 1, 600), day('2026-10-15', 300, 1, 400)]
-  const months = monthlyTotals(rows)
-  assert.deepEqual(months.map(({ month }) => month), ['2026-10', '2026-09'])
-  assert.equal(months[0].totals.cost, 500)
-  assert.equal(months[0].totals.revenue, 1000)
+test('월 누적 추이는 최근 월 기준 3개월이고, 전월 값도 함께 준다', () => {
+  const rows = [
+    day('2026-06-30', 50, 1, 50), // 범위 밖 (4개월 전)
+    day('2026-07-10', 100, 1, 100), // 범위 밖이지만 8월의 전월
+    day('2026-08-01', 200, 1, 600),
+    day('2026-10-01', 300, 1, 400),
+    day('2026-10-15', 100, 1, 400),
+  ]
+  const trend = monthlyTrend(rows)
+  assert.deepEqual(trend.map(({ month }) => month), ['2026-08', '2026-09', '2026-10'])
+  assert.equal(trend[0].previous.cost, 100) // 7월
+  assert.equal(trend[1].totals, null) // 9월 데이터 없음
+  assert.equal(trend[2].totals.cost, 400)
+  assert.equal(trend[2].previous, null)
+})
+
+test('월 이동은 연도를 넘어간다', () => {
+  assert.equal(shiftMonth('2026-01', -1), '2025-12')
+  assert.equal(shiftMonth('2025-12', 1), '2026-01')
+  assert.equal(shiftMonth('2026-10', -2), '2026-08')
+})
+
+test('전월 대비: CPA 는 증감률, ROAS 는 %p, 계산 불가면 -', () => {
+  assert.equal(formatChange(changeRate(8800, 10000)), '▼ 12%')
+  assert.equal(formatChange(4.2 - 3.85, '%p'), '▲ 35%p')
+  assert.equal(formatChange(changeRate(100, 0)), '-')
+  assert.equal(formatChange(changeRate(null, 100)), '-')
+  assert.equal(formatChange(0), '0%')
 })
 
 test('데이터가 없으면 추이와 월 누적 모두 빈 목록이다', () => {
   assert.deepEqual(dailyTrend([]), [])
-  assert.deepEqual(monthlyTotals([]), [])
+  assert.deepEqual(monthlyTrend([]), [])
 })
 
 test('날짜 필터는 시작·끝 날짜를 포함하고, 빈 값은 제한하지 않는다', () => {
@@ -111,4 +133,17 @@ test('최근 날짜와 날짜 이동', () => {
   assert.equal(latestDate([day('2026-10-01', 1, 1, 1), day('2026-10-07', 1, 1, 1)]), '2026-10-07')
   assert.equal(latestDate([]), null)
   assert.equal(shiftDate('2026-10-07', -6), '2026-10-01')
+})
+
+test('캠페인별 성과는 매체+캠페인으로 묶고, 광고그룹을 하위에 둔다 (광고비 큰 순)', () => {
+  const row = (media, campaignName, adGroupName, cost) =>
+    ({ ...day('2026-10-01', cost, 1, cost * 3), media, campaignName, adGroupName })
+  const result = campaignBreakdown([
+    row('NAVER', '브랜드', 'A', 100),
+    row('NAVER', '브랜드', 'B', 300),
+    row('NAVER', '브랜드', 'A', 50),
+    row('META', '브랜드', 'A', 1000), // 이름이 같아도 매체가 다르면 다른 캠페인
+  ])
+  assert.deepEqual(result.map((c) => `${c.media} ${c.campaignName} ${c.totals.cost}`), ['META 브랜드 1000', 'NAVER 브랜드 450'])
+  assert.deepEqual(result[1].adGroups.map((g) => `${g.adGroupName} ${g.totals.cost}`), ['B 300', 'A 150'])
 })
