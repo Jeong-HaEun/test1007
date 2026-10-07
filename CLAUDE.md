@@ -34,8 +34,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev                           # http://localhost:5173
 npm run build
 npm run lint                          # oxlint
+npm test                              # node --test (설치 없이 Node 내장 테스트, *.test.js)
+node --test src/utils/metrics.test.js # 파일 하나만
 ```
-- 프론트엔드 테스트 도구는 아직 없다.
 
 ## 비밀값 / 환경변수
 - 코드에 접속 정보·비밀번호를 쓰지 않는다. `.env` 는 git 제외, `.env.example` 만 커밋.
@@ -105,3 +106,6 @@ npm run lint                          # oxlint
 
 ## 나중에 (시간 남으면)
 매체별·날짜 필터, 매체별 ROAS 막대 차트, 소재별 CPB 비교
+
+## 배포 단계 체크리스트
+- 사용자가 "배포 단계"를 시작하자고 하면, 먼저 `README.md` 를 **UTF-8로 새로 작성**한다 (현재 UTF-16). 포트폴리오용: 소개, 배포 주소, 화면 캡처, 기술 스택.
