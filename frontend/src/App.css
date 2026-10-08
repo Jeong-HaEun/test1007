@@ -652,3 +652,106 @@ abbr[title] {
   font-size: 13px;
   color: var(--text-muted);
 }
+
+/* 모바일 (폭 640px 이하): 여백·글자를 줄이고, 카드·퍼널은 2칸씩 */
+@media (max-width: 640px) {
+  .app {
+    padding: 24px 16px;
+    gap: 20px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .brand img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .app-header p {
+    font-size: 13px;
+  }
+
+  .csv-upload {
+    align-items: stretch;
+  }
+
+  .csv-actions > * {
+    flex: 1;
+  }
+
+  .section h2 {
+    font-size: 18px;
+  }
+
+  .page-nav a {
+    padding: 8px 16px;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .summary-card {
+    padding: 16px;
+  }
+
+  .summary-label {
+    font-size: 13px;
+  }
+
+  .summary-hint {
+    display: block;
+    margin-left: 0;
+  }
+
+  .summary-value {
+    font-size: 20px;
+  }
+
+  .funnel-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .funnel-step {
+    padding: 12px 14px;
+    border-right: none;
+  }
+
+  .funnel-step:nth-child(odd) {
+    border-right: 1px solid rgba(26, 18, 16, 0.08);
+  }
+
+  .funnel-step:nth-child(-n + 2) {
+    border-bottom: 1px solid rgba(26, 18, 16, 0.08);
+  }
+
+  .funnel-count {
+    font-size: 18px;
+  }
+
+  .trend-chart {
+    padding: 16px 8px 8px;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+
+  /* 첫 열(날짜·월·매체·순위) 고정: 옆으로 밀어도 어느 행인지 보이게. 캠페인 표는 첫 열이 매체라 제외 */
+  .report-table:not(.campaign-table) tr > :first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface-solid);
+    box-shadow: 1px 0 0 rgba(26, 18, 16, 0.08);
+  }
+
+  .form-actions > * {
+    flex: 1;
+  }
+}

@@ -8,6 +8,7 @@
   --glass-inner-glow: inset 0 1.5px 1px rgba(255, 255, 255, 0.95);
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
   --glass-blur: blur(24px) saturate(180%);
+  --surface-solid: #FCF9F7; /* 유리 패널 위 불투명 바탕 (모바일 표 고정 열) */
 
   /* Typography */
   --text-main: #1A1210;
