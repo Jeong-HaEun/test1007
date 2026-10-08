@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import {
   CartesianGrid, LabelList, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
@@ -12,9 +11,6 @@ const COLORS = {
   grid: 'rgba(26, 18, 16, 0.08)',
 }
 
-// App.css 의 모바일 기준과 같은 값
-const NARROW_QUERY = '(max-width: 640px)'
-
 /**
  * 지표 하나의 선 그래프 (일자별·월별 추이 공용). 값이 null 인 점은 선을 끊는다.
  * data: [{ label(가로축), tooltipLabel(툴팁 제목), [dataKey]: 숫자 | null }]
@@ -22,35 +18,25 @@ const NARROW_QUERY = '(max-width: 640px)'
 function TrendChart({ title, data, dataKey, format, tickFormat }) {
   const lastIndex = data.findLastIndex((point) => point[dataKey] !== null)
 
-  // 좁은 화면이면 축·여백을 줄여 선이 그려질 공간을 넓힌다
-  const [narrow, setNarrow] = useState(() => window.matchMedia(NARROW_QUERY).matches)
-  useEffect(() => {
-    const query = window.matchMedia(NARROW_QUERY)
-    const onChange = (event) => setNarrow(event.matches)
-    query.addEventListener('change', onChange)
-    return () => query.removeEventListener('change', onChange)
-  }, [])
-  const fontSize = narrow ? 11 : 12
-
   return (
     <figure className="glass trend-chart">
       <figcaption>{title}</figcaption>
-      <ResponsiveContainer width="100%" height={narrow ? 200 : 240}>
-        <LineChart data={data} margin={{ top: 16, right: narrow ? 48 : 56, bottom: 0, left: 0 }}>
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={data} margin={{ top: 16, right: 56, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke={COLORS.grid} />
           <XAxis
             dataKey="label"
             tickLine={false}
             axisLine={{ stroke: COLORS.grid }}
-            tick={{ fill: COLORS.muted, fontSize }}
+            tick={{ fill: COLORS.muted, fontSize: 12 }}
             interval="preserveStartEnd"
           />
           <YAxis
             tickFormatter={tickFormat}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: COLORS.muted, fontSize }}
-            width={narrow ? 48 : 72}
+            tick={{ fill: COLORS.muted, fontSize: 12 }}
+            width={72}
           />
           <Tooltip
             formatter={(value) => [format(value), title]}
@@ -79,7 +65,7 @@ function TrendChart({ title, data, dataKey, format, tickFormat }) {
               dataKey={dataKey}
               content={({ x, y, index, value }) =>
                 index === lastIndex ? (
-                  <text x={x + 10} y={y} dy={4} fill={COLORS.text} fontSize={fontSize} fontWeight={600}>
+                  <text x={x + 10} y={y} dy={4} fill={COLORS.text} fontSize={12} fontWeight={600}>
                     {format(value)}
                   </text>
                 ) : null
